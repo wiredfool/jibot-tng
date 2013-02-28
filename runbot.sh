@@ -1,9 +1,9 @@
 #!/usr/bin/env sh
 
 # Set Environment Variables
-export HUBOT_IRC_NICK=my_stoopid_bot
+export HUBOT_IRC_NICK=wibot
 export HUBOT_IRC_SERVER=irc.freenode.net
-export HUBOT_IRC_ROOMS="#my_stoopid_bots_lair"
+export HUBOT_IRC_ROOMS="#wiredfool"
 
 # Using SSL?
 #export HUBOT_IRC_PORT=6697
@@ -27,9 +27,11 @@ echo HUBOT_IRC_ROOMS=$HUBOT_IRC_ROOMS
 #echo HUBOT_IRC_PASSWORD=$HUBOT_IRC_PASSWORD
 
 # Start the redis brain
-echo ""
-echo "Starting Redis Server"
-/usr/local/bin/redis-server > /dev/null &
+#echo ""
+#echo "Starting Redis Server"
+#/usr/local/bin/redis-server > /dev/null &
+
+export FILE_BRAIN_PATH=/tmp
 
 echo ""
 echo "Starting bot"
