@@ -174,7 +174,7 @@ module.exports = (robot) ->
 
   # start [botname one space] ?def <nick>
   # pms have botname prepended to the message 
-  robot.hear /^([\w-_]+\s)?\?def @?([\w.-]+):?(.*)/i, (msg) ->
+  robot.hear /^([-\w_]+\s)?\?def @?([-\w._]+):?(.*)/i, (msg) ->
     name = msg.match[2].trim()
     dbg "def #{name}, '#{msg.match[3].trim().substr(0,2)}'"
     if msg.match[3].trim().length is 0
@@ -182,7 +182,7 @@ module.exports = (robot) ->
       msg.send defs.render name
 
   # doubling the quotes to fix syntax highlighting. Shouldn't affect the regex 
-  robot.hear /^([\w-_]+\s)?\?(learn|def) @?([\w.-_]+):? is ([""''\w: -_]+)[.!]*$/i, (msg) ->
+  robot.hear /^([-\w-]+\s)?\?(learn|def) @?([-\w._]+):? is ([""''\w: -_]+)[.!]*$/i, (msg) ->
     dbg "learn|def"
     if is_pm msg
       msg.send "I don't change defs in private messages"
@@ -195,7 +195,7 @@ module.exports = (robot) ->
       defs.add_def name, newRole
       msg.send defs.render name
 
-  robot.hear /^([\w-_]+\s)?\?forget @?([\w.-_]+):? is ([""''\w: -_]+)[.!]*$/i, (msg) -> 
+  robot.hear /^([-\w_]+\s)?\?forget @?([-\w._]+):? is ([""''\w: -_]+)[.!]*$/i, (msg) -> 
     if is_pm msg
       msg.send "I don't change defs in private messages"
       return
@@ -211,7 +211,7 @@ module.exports = (robot) ->
       else
         msg.send "I knew that already."
       
-  robot.hear /^([\w-_]+\s)?\?forgetme(\s|$)/i, (msg) ->
+  robot.hear /^([-\w_]+\s)?\?forgetme(\s|$)/i, (msg) ->
     if is_pm msg
       msg.send "I don't change defs in private messages"
       return
