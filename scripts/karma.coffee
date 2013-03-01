@@ -10,8 +10,8 @@
 # Commands:
 #   <thing>++ - give thing some karma
 #   <thing>-- - take away some of thing's karma
-#   ?karma <thing> - check thing's karma (if <thing> is omitted, show the top 5)
-#
+#   ?karma <thing> - check thing's karma
+# 
 # Author:
 #   stuartf as munged by wiredfool
 

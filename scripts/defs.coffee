@@ -3,22 +3,19 @@
 #   rewritten by wiredfool for general defs and jibot syntax
 #
 # Commands:
-#   ?learn <user> is a badass guitarist - assign a role to a user
-#   ?def <user> is a badass guitarist - assign a role to a user
-#   ?forget <user> is a badass guitarist - remove a role from a user
-#   ?def <user> - see what roles a user has
+#   ?learn <user> is <something> - assign something to a user
+#   ?def <user> is <something> - like learn
+#   ?forget <user> is <something> - remove something from a user
+#   ?def <user> - see what user is
 #   ?forgetme - forgets all defs for a user
 #   ?hearldme - toggles heralding
 #   
 # Examples:
-#   ?learn holman is an ego surfer
-#   ?forget holman is an ego surfer
+#   ?learn jeannie is the queen
+#   ?forget jeannie is snoggs
 #
 # Author:
 #   rewritten by wiredfool for general defs 
-
-# undone -- privmessage flag. 
-# 
 
 clean = (thing) ->
   (thing || '').toLowerCase().trim()
