@@ -4,10 +4,12 @@
 #
 # Commands:
 #   ?learn <user> is a badass guitarist - assign a role to a user
+#   ?def <user> is a badass guitarist - assign a role to a user
 #   ?forget <user> is a badass guitarist - remove a role from a user
 #   ?def <user> - see what roles a user has
-#   ?forgetme
-#
+#   ?forgetme - forgets all defs for a user
+#   ?hearldme - toggles heralding
+#   
 # Examples:
 #   ?learn holman is an ego surfer
 #   ?forget holman is an ego surfer
@@ -19,9 +21,21 @@
 # 
 
 clean = (thing) ->
-  thing.toLowerCase().trim()
+  (thing || '').toLowerCase().trim()
 dbg = (thing) ->
   console.log thing
+
+is_pm = (msg) ->
+  try
+    msg.message.user.pm
+  catch error
+    false
+
+ircname = (msg) ->
+  try
+    msg.message.user.name
+  catch error
+    false        
 
 class Defs
   
@@ -113,43 +127,97 @@ class Herald
     else
       dbg "too recent a herald/leave"
       false
+
+class AKA
+  # keeps a list of what aliases show up for what users
+  # forward is alias -> user, supposedly one user per alias
+  # reverse is user-> [alias,], where we expect more than one   
+  constructor: (@robot) ->
+    @cache = {forward:{},reverse:{}}
     
+    @robot.brain.on 'loaded', =>
+      if @robot.brain.data.aka
+        @cache = @robot.brain.data.aka
+      else
+        @robot.brain.data.aka = @cache
+
+  save: ->
+      @robot.brain.data.aka = @cache
+
+  add: (user, alias) ->
+    user = clean user
+    alias = clean alias
+    @cache.reverse[user] ?= []
+    unless alias in @cache.reverse[user]
+      @cache.reverse[user].push(alias)
+      @cache.forward[alias] = user
+      @save
+      console.log("added alias #{alias} for #{user}")
+
+  rm: (user, alias) ->
+    user = clean user
+    alias = clean alias
+    if @cache.forward[alias] = user
+      delete @cache.forward[alias]
+      @cache.reverse[user] = (old for old in @cache.reverse[user] when old isnt alias)
+
+  canonicalize: (name) ->
+    @cache.forward[clean name] ? name
+      
+  whois: (name) ->
+    @cache.reverse[clean name] ? []  
+ 
+            
 module.exports = (robot) ->
   defs = new Defs robot
   herald = new Herald robot
-  
-  robot.hear /^\?def @?([\w.-]+):?(.*)/i, (msg) ->
-    name = msg.match[1].trim()
-    unless msg.match[2].trim().substr(0,2) is 'is'
+  aka = new AKA robot
+
+  # start [botname one space] ?def <nick>
+  # pms have botname prepended to the message 
+  robot.hear /^([\w-_]+\s)?\?def @?([\w.-]+):?(.*)/i, (msg) ->
+    name = msg.match[2].trim()
+    dbg "def #{name}, '#{msg.match[3].trim().substr(0,2)}'"
+    if msg.match[3].trim().length is 0
+      dbg 'splaining'
       msg.send defs.render name
 
   # doubling the quotes to fix syntax highlighting. Shouldn't affect the regex 
-  robot.hear /^\?(learn|def) @?([\w.-_]+):? is ([""''\w: -_]+)[.!]*$/i, (msg) -> 
+  robot.hear /^([\w-_]+\s)?\?(learn|def) @?([\w.-_]+):? is ([""''\w: -_]+)[.!]*$/i, (msg) ->
+    dbg "learn|def"
+    if is_pm msg
+      msg.send "I don't change defs in private messages"
+      return
+    name    = msg.match[3].trim()
+    newRole = msg.match[4].trim()
+
+    unless name in ['', 'who', 'what', 'where', 'when', 'why']
+      dbg 'setting def'
+      defs.add_def name, newRole
+      msg.send defs.render name
+
+  robot.hear /^([\w-_]+\s)?\?forget @?([\w.-_]+):? is ([""''\w: -_]+)[.!]*$/i, (msg) -> 
+    if is_pm msg
+      msg.send "I don't change defs in private messages"
+      return
+
     name    = msg.match[2].trim()
     newRole = msg.match[3].trim()
 
     unless name in ['', 'who', 'what', 'where', 'when', 'why']
-      defs.add_def name, newRole
-      msg.send defs.render name
-
-  # syntax...
-  robot.hear /\?forget @?([\w.-_]+):? is ([""''\w: -_]+)[.!]*$/i, (msg) -> 
-    name    = msg.match[1].trim()
-    newRole = msg.match[2].trim()
-
-    unless name in ['', 'who', 'what', 'where', 'when', 'why']
-      if newRole in defs.get name 
+      if newRole in defs.get name
+        dbg "forgetting role #{newRole}"
         defs.rm_def name, newRole
         msg.send defs.render name
       else
         msg.send "I knew that already."
       
-  robot.hear /\?forgetme(\s|$)/i, (msg) ->
-    #msg.send msg.message.user.room # if privmsg, this is going to be ''
-    #msg.send msg.message.user.name # if privmsg, then name == reply_to
-
-    name    = msg.message.user.name
-    msg.send "Trying to forget #{name}"
+  robot.hear /^([\w-_]+\s)?\?forgetme(\s|$)/i, (msg) ->
+    if is_pm msg
+      msg.send "I don't change defs in private messages"
+      return
+      
+    name = ircname msg
 
     roles = defs.get name
     if not roles.length
@@ -161,20 +229,37 @@ module.exports = (robot) ->
 
   #heralding for entering.    
   robot.enter (msg) ->
-    name = msg.message.user.name
+    name = ircname msg
     if herald.joined name
       roles = defs.get name
       if roles.length
+        dbg "heralding #{name}"
         msg.send defs.render name
     
   robot.leave (msg) ->
-    name = msg.message.user.name
+    name = ircname msg
     herald.left name
     
   robot.hear /\?heraldme(\s|$)/i, (msg) ->
-    name    = msg.message.user.name
+    name = ircname msg
     herald.toggle name
     actioning = 'ignoring'
     if herald.enabled name
       actioning = "heralding"
     msg.send "Now #{actioning} your entries"
+
+  # adding an aka for people who switch names.
+  robot.hear /\?aka @?([\w.-_]+):?/i, (msg) -> 
+    name = msg.match[1].trim()
+    akas = aka.whois name
+    if akas.length
+      msg.send "#{name} is also known as #{akas.join(', ')}"
+    else
+      msg.send "I don't have any info for #{name}"
+    
+  robot.catchAll (msg)->
+    matches = msg.message.match /^nick: ([\w.-_]+) ([\w.-_]+)$/
+    if matches
+      oldnick = matches[1]
+      newnick = matches[2]
+      aka.add oldnick, newnick
