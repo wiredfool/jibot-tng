@@ -15,6 +15,13 @@
 # Author:
 #   stuartf as munged by wiredfool
 
+is_pm = (msg) ->
+  try
+    msg.message.user.pm
+  catch error
+    false
+
+
 class Karma
   
   constructor: (@robot) ->
@@ -73,17 +80,19 @@ class Karma
 module.exports = (robot) ->
   karma = new Karma robot
   robot.hear /(\S+[^+\s])\+\+(\s|$)/, (msg) ->
+    return if is_pm msg
     subject = msg.match[1].toLowerCase()
     karma.increment subject
-    msg.send "#{subject} #{karma.incrementResponse()} (Karma: #{karma.get(subject)})"
   
   robot.hear /(\S+[^-\s])--(\s|$)/, (msg) ->
+    return if is_pm msg
     subject = msg.match[1].toLowerCase()
     karma.decrement subject
-    msg.send "#{subject} #{karma.decrementResponse()} (Karma: #{karma.get(subject)})"
   
   robot.hear /\?karma (\S+[^\s])$/i, (msg) ->
     match = msg.match[1].toLowerCase()
-    if match != "best" && match != "worst"
-      msg.send "\"#{match}\" has #{karma.get(match)} karma."
+    if match is "chameleon"
+      msg.send "https://www.youtube.com/watch?v=JmcA9LIIXWw"
+    else
+      msg.send "#{match} has #{karma.get(match)} points."
   
