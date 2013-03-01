@@ -73,8 +73,10 @@ class Defs
   render: (name) ->
     thing = clean name
     roles = @get thing
-    if roles.length > 0
-      "#{name} is #{roles.join(", ")}."
+    if roles.length > 5
+      "#{name} is #{roles.join(" & ")}."
+    else if roles.length > 0
+      "#{name} is #{roles.join(" and ")}."
     else
       "I don't know anything about #{name}."
 
