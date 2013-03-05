@@ -52,7 +52,8 @@ class Defs
       @save
 
   save: ->
-      @robot.brain.data.defs = @cache
+    dbg "saving defs" 
+    @robot.brain.data.defs = @cache
 
   rm_def: (thing, def) ->
     thing = clean thing
@@ -93,6 +94,7 @@ class Herald
         @robot.brain.data.herald = @cache
 
   save: ->
+      dbg "saving herald"
       @robot.brain.data.herald = @cache
 
   enabled: (user) ->
@@ -141,6 +143,7 @@ class AKA
         @robot.brain.data.aka = @cache
 
   save: ->
+      dbg "saving aka"
       @robot.brain.data.aka = @cache
 
   add: (user, alias) ->
