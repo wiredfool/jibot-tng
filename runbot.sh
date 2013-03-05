@@ -1,8 +1,9 @@
 #!/usr/bin/env sh
 
 # Set Environment Variables
-export HUBOT_IRC_NICK=wibot
+export HUBOT_IRC_NICK="jibot-tng"
 export HUBOT_IRC_SERVER=irc.freenode.net
+#export HUBOT_IRC_ROOMS="#joiito,#wiredfool"
 export HUBOT_IRC_ROOMS="#wiredfool"
 
 # Using SSL?
