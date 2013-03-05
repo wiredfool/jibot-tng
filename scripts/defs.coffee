@@ -120,7 +120,7 @@ class Herald
       # not saving, I don't need this through a restart
       dbg "we're good"
       @cache.last[user]=now
-      dbg @cache.last
+      #dbg @cache.last
       @save
       true
     else
@@ -248,7 +248,7 @@ module.exports = (robot) ->
     msg.send "Now #{actioning} your entries"
 
   # adding an aka for people who switch names.
-  robot.hear /\?aka @?([\w.-_]+):?/i, (msg) -> 
+  robot.hear /\?aka @?([-\w._]+):?/i, (msg) -> 
     name = msg.match[1].trim()
     akas = aka.whois name
     if akas.length
@@ -257,7 +257,7 @@ module.exports = (robot) ->
       msg.send "I don't have any info for #{name}"
     
   robot.catchAll (msg)->
-    matches = msg.message.match /^nick: ([\w.-_]+) ([\w.-_]+)$/
+    matches = msg.message.match /^nick: ([-\w.-_]+) ([-\w._]+)$/
     if matches
       oldnick = matches[1]
       newnick = matches[2]
