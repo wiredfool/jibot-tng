@@ -35,23 +35,26 @@ class Karma
       "took a hit! Ouch.", "took a dive.", "lost a life.", "lost a level."
     ]
     
-    @robot.brain.on 'loaded', =>
-      if @robot.brain.data.karma
-        @cache = @robot.brain.data.karma
-  
+    @robot.brain.on 'loaded', @load
+    if @robot.brain.data
+      @load()  
+    
+  load: ->
+    if @robot.brain.data.karma
+      @cache = @robot.brain.data.karma
+    else
+      @robot.brain.data.karma = @cache
+      
   kill: (thing) ->
     delete @cache[thing]
-    @robot.brain.data.karma = @cache
   
   increment: (thing) ->
     @cache[thing] ?= 0
     @cache[thing] += 1
-    @robot.brain.data.karma = @cache
 
   decrement: (thing) ->
     @cache[thing] ?= 0
     @cache[thing] -= 1
-    @robot.brain.data.karma = @cache
   
   incrementResponse: ->
      @increment_responses[Math.floor(Math.random() * @increment_responses.length)]

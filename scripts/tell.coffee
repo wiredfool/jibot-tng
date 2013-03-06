@@ -38,30 +38,26 @@ ircchan = (msg) ->
 class Tell
   constructor: (@robot) ->
     @cache = {}
-    
-    @robot.brain.on 'loaded', =>
-      if @robot.brain.data.tell
-        @cache = @robot.brain.data.tell
-      else
-        @robot.brain.data.tell = @cache
-      dbg @robot.brain.data.tell
 
-  xsave: ->
-    @robot.data.brain.tell = @cache
-    dbg "saving"
-    dbg @robot.data.brain.tell 
+    @robot.brain.on 'loaded', @load
+    if @robot.brain.data
+      @load()  
+    
+  load: ->
+    if @robot.brain.data.tell
+      @cache = @robot.brain.data.tell
+    else
+      @robot.brain.data.tell = @cache
 
   add: (user, message) ->
     dbg "tell.add #{clean user} #{message}"
     @cache[clean user] = message
-#    @save()
 
   get: (user) ->
     @cache[clean user] ? ""
 
   clear: (user) ->
     delete @cache[clean user]
-#    @save()
 
 module.exports = (robot) ->
   tell = new Tell robot

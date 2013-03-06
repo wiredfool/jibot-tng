@@ -39,32 +39,30 @@ class Defs
   constructor: (@robot) ->
     @cache = {}
 
-    @robot.brain.on 'loaded', =>
-      if @robot.brain.data.defs
-        @cache = @robot.brain.data.defs
+    @robot.brain.on 'loaded', @load
+    if @robot.brain.data
+      @load()
 
+  load: ->
+    if @robot.brain.data.defs
+      @cache = @robot.brain.data.defs
+    else
+      @robot.brain.data.defs = @cache 
         
   add_def: (thing, def) ->
     thing = clean thing
     @cache[thing] ?= []
     unless def in @cache[thing]
       @cache[thing].push(def)
-      @save
-
-  save: ->
-    dbg "saving defs" 
-    @robot.brain.data.defs = @cache
 
   rm_def: (thing, def) ->
     thing = clean thing
     @cache[thing] ?= []
     @cache[thing] = (olddef for olddef in @cache[thing] when olddef isnt def)
-    @save
 
   clear_defs: (thing) ->
     thing = clean thing
     @cache[thing]=[]
-    @save
 
   get: (thing) ->
     thing = clean thing
@@ -87,15 +85,15 @@ class Herald
     @cache = {left:{},pref:{},last:{}}
     @threshold = 5*60*1000;
     
-    @robot.brain.on 'loaded', =>
-      if @robot.brain.data.herald
-        @cache = @robot.brain.data.herald
-      else
-        @robot.brain.data.herald = @cache
+    @robot.brain.on 'loaded', @load
+    if @robot.brain.data
+      @load()
 
-  save: ->
-      dbg "saving herald"
-      @robot.brain.data.herald = @cache
+  load: ->
+    if @robot.brain.data.herald
+      @cache = @robot.brain.data.herald
+    else
+      @robot.brain.data.herald = @cache 
 
   enabled: (user) ->
     @cache.pref[clean user] ? true
@@ -103,12 +101,10 @@ class Herald
   toggle: (user) ->
     user = clean user
     @cache.pref[user] = !(@cache.pref[user] ? true)
-    @save
 
   left: (user) ->
     # not saving, don't need this through a restart
     @cache.left[clean user] = new Date() - 0
-    @save
     
   joined: (user) ->
     # Not heralding if the user came or left in the last threshold milliseconds
@@ -123,7 +119,6 @@ class Herald
       dbg "we're good"
       @cache.last[user]=now
       #dbg @cache.last
-      @save
       true
     else
       dbg "too recent a herald/leave"
@@ -135,16 +130,16 @@ class AKA
   # reverse is user-> [alias,], where we expect more than one   
   constructor: (@robot) ->
     @cache = {forward:{},reverse:{}}
-    
-    @robot.brain.on 'loaded', =>
-      if @robot.brain.data.aka
-        @cache = @robot.brain.data.aka
-      else
-        @robot.brain.data.aka = @cache
 
-  save: ->
-      dbg "saving aka"
-      @robot.brain.data.aka = @cache
+    @robot.brain.on 'loaded', @load
+    if @robot.brain.data
+      @load()
+
+  load: ->
+    if @robot.brain.data.aka
+      @cache = @robot.brain.data.aka
+    else
+      @robot.brain.data.aka = @cache 
 
   add: (user, alias) ->
     user = clean user
@@ -153,7 +148,6 @@ class AKA
     unless alias in @cache.reverse[user]
       @cache.reverse[user].push(alias)
       @cache.forward[alias] = user
-      @save
       console.log("added alias #{alias} for #{user}")
 
   rm: (user, alias) ->

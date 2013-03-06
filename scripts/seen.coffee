@@ -39,26 +39,24 @@ ircchan = (msg) ->
 class Seen
   constructor: (@robot) ->
     @cache = {}
-        
-    @robot.brain.on 'loaded', =>
-      if @robot.brain.data.seen
-        @cache = @robot.brain.data.seen
-      else
-        @robot.data.brain.seen = @cache
-      dbg @robot.brain.data.seen
-            
-#    save: ->
-#        @robot.data.brain.seen = @cache
-#        dbg "saving seen"
-#        dbg @robot.data.brain.seen
 
+    @robot.brain.on 'loaded', @load
+    if @robot.brain.data
+      @load()  
+    
+  load: ->
+    if @robot.brain.data.seen
+      @cache = @robot.brain.data.seen
+    else
+      @robot.brain.data.seen = @cache
+            
   add: (user, channel) ->
     dbg "seen.add #{clean user} on #{channel}"
-    #@cache[clean user] = {c:channel, d:new Date() - 0}
-        #@save()
+    @cache[clean user] = {c:channel, d:new Date() - 0}
 
   last: (user) ->
     @cache[clean user] ? {}
+
 
 module.exports = (robot) ->
   seen = new Seen robot
