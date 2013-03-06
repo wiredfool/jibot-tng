@@ -40,10 +40,11 @@ class Defs
     @cache = {}
 
     @robot.brain.on 'loaded', @load
-    if @robot.brain.data
+    if @robot.brain.data.users.length
       @load()
 
-  load: ->
+  load: =>
+    dbg "defs->load"
     if @robot.brain.data.defs
       @cache = @robot.brain.data.defs
     else
@@ -86,10 +87,11 @@ class Herald
     @threshold = 5*60*1000;
     
     @robot.brain.on 'loaded', @load
-    if @robot.brain.data
+    if @robot.brain.data.users.length
       @load()
 
-  load: ->
+  load: =>
+    dbg "herald->load"
     if @robot.brain.data.herald
       @cache = @robot.brain.data.herald
     else
@@ -132,10 +134,11 @@ class AKA
     @cache = {forward:{},reverse:{}}
 
     @robot.brain.on 'loaded', @load
-    if @robot.brain.data
+    if @robot.brain.data.users.length
       @load()
 
-  load: ->
+  load: =>
+    dbg "aka->load"
     if @robot.brain.data.aka
       @cache = @robot.brain.data.aka
     else

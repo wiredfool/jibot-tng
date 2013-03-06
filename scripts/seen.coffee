@@ -41,10 +41,10 @@ class Seen
     @cache = {}
 
     @robot.brain.on 'loaded', @load
-    if @robot.brain.data
+    if @robot.brain.data.users.length
       @load()  
     
-  load: ->
+  load: =>
     if @robot.brain.data.seen
       @cache = @robot.brain.data.seen
     else

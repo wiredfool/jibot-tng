@@ -40,10 +40,10 @@ class Tell
     @cache = {}
 
     @robot.brain.on 'loaded', @load
-    if @robot.brain.data
+    if @robot.brain.data.users.length
       @load()  
     
-  load: ->
+  load: =>
     if @robot.brain.data.tell
       @cache = @robot.brain.data.tell
     else
