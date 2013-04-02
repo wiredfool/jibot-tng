@@ -1,16 +1,15 @@
-hubot-irc-runnable
-==================
+Jibot-tng
+---------
 
-A pre-packaged runnable version of the [hubot-irc](https://github.com/nandub/hubot-irc) adapter.
+Jibot, reimplemented on top of hubot. 
 
 ## Dependencies
 
 - [Node js](http://nodejs.org)
-- [Redis](http://reistiago.wordpress.com/2011/07/23/installing-on-redis-mac-os-x/)
 
 ## Setup
 
-- Clone this repo or download the [latest tag](https://github.com/jgable/hubot-irc-runnable/tags).
+- Clone this repo.
 - Install dependencies: `npm install`
 - Change the settings in the `runbot.sh` file to match your situation
 - Run the Bot: `. runbot.sh`
