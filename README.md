@@ -10,9 +10,9 @@ Jibot, reimplemented on top of hubot.
 ## Setup
 
 - Clone this repo.
-- Install dependencies: `npm install`
+- Install dependencies: `cd jibot-tng; npm install`
 - Change the settings in the `runbot.sh` file to match your situation
-- Run the Bot: `. runbot.sh`
+- Run the Bot: `./runbot.sh`
 
 If the `runbot.sh` file is not executable you can change the execute permissions with
     
