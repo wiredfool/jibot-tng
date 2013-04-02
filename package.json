@@ -1,5 +1,5 @@
 {
-  "name": "hosted-hubot",
+  "name": "hubot-jibot",
   "version": "2.3.2",
   "author": "GitHub Inc.",
   "keywords": "github hubot campfire bot",
@@ -17,7 +17,7 @@
   "dependencies": {
     "hubot": "2.3.2",
     "optparse": "1.0.3",
-    "hubot-irc": "0.1.x"
+    "hubot-irc": "git+https://github.com/wiredfool/hubot-irc.git"
   },
   "engines": {
     "node": "0.6.x",
